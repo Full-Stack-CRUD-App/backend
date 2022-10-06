@@ -24,7 +24,7 @@ const registerAndLogin = async (userProps = {}) => {
 
   // ...then sign in
   const { email } = user;
-  await agent.post('/api/v1/users/sessions').send({ email, password });
+  await agent.post('/api/v1/auth/signin').send({ email, password });
   return [agent, user];
 };
 
@@ -37,7 +37,7 @@ describe('user routes', () => {
   });
 
   it('creates a new user', async () => {
-    const res = await request(app).post('/api/v1/users').send(mockUser);
+    const res = await request(app).post('/api/v1/auth/signup').send(mockUser);
     const { firstName, lastName, email } = mockUser;
 
     expect(res.body).toEqual({
@@ -49,35 +49,35 @@ describe('user routes', () => {
   });
 
   it('signs in an existing user', async () => {
-    await request(app).post('/api/v1/users').send(mockUser);
+    await request(app).post('/api/v1/auth/signup').send(mockUser);
     const res = await request(app)
-      .post('/api/v1/users/sessions')
+      .post('/api/v1/auth/signin')
       .send({ email: 'test@example.com', password: '12345' });
     expect(res.status).toEqual(200);
   });
 
   it('/protected should return a 401 if not authenticated', async () => {
-    const res = await request(app).get('/api/v1/users/protected');
+    const res = await request(app).get('/api/v1/auth/protected');
     expect(res.status).toEqual(401);
   });
 
   it('/protected should return the current user if authenticated', async () => {
     const [agent] = await registerAndLogin();
-    const res = await agent.get('/api/v1/users/protected');
+    const res = await agent.get('/api/v1/auth/protected');
     expect(res.status).toEqual(200);
   });
 
-  it('/users should return 401 if user not admin', async () => {
+  it('/auth should return 401 if user not admin', async () => {
     const [agent] = await registerAndLogin();
-    const res = await agent.get('/api/v1/users/');
+    const res = await agent.get('/api/v1/auth/');
     expect(res.status).toEqual(403);
   });
 
-  it('/users should return 200 if user is admin', async () => {
+  it('/auth should return 200 if user is admin', async () => {
     const agent = request.agent(app);
 
     // create a new user
-    await agent.post('/api/v1/users').send({
+    await agent.post('/api/v1/auth/signup').send({
       email: 'admin',
       password: '1234',
       firstName: 'admin',
@@ -85,23 +85,23 @@ describe('user routes', () => {
     });
     // sign in the user
     await agent
-      .post('/api/v1/users/sessions')
+      .post('/api/v1/auth/signin')
       .send({ email: 'admin', password: '1234' });
 
     // const [agent] = await registerAndLogin({ email: 'admin' });
-    const res = await agent.get('/api/v1/users/');
+    const res = await agent.get('/api/v1/auth/');
     expect(res.status).toEqual(200);
   });
 
-  it('/users should return a 200 if user is admin', async () => {
+  it('/auth should return a 200 if user is admin', async () => {
     const [agent] = await registerAndLogin({ email: 'admin' });
-    const res = await agent.get('/api/v1/users/');
+    const res = await agent.get('/api/v1/auth/');
     expect(res.status).toEqual(200);
   });
 
-  it('DELETE /sessions deletes the user session', async () => {
+  it('DELETE /signout deletes the user session', async () => {
     const [agent] = await registerAndLogin();
-    const resp = await agent.delete('/api/v1/users/sessions');
+    const resp = await agent.delete('/api/v1/auth/signout');
     expect(resp.status).toBe(204);
   });
 });
