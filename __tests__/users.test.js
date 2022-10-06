@@ -6,8 +6,6 @@ const UserService = require('../lib/services/UserService');
 
 // Dummy user for testing
 const mockUser = {
-  firstName: 'Test',
-  lastName: 'User',
   email: 'test@example.com',
   password: '12345',
 };
@@ -38,12 +36,10 @@ describe('user routes', () => {
 
   it('creates a new user', async () => {
     const res = await request(app).post('/api/v1/auth/signup').send(mockUser);
-    const { firstName, lastName, email } = mockUser;
+    const { email } = mockUser;
 
     expect(res.body).toEqual({
       id: expect.any(String),
-      firstName,
-      lastName,
       email,
     });
   });
@@ -69,7 +65,7 @@ describe('user routes', () => {
 
   it('/auth should return 401 if user not admin', async () => {
     const [agent] = await registerAndLogin();
-    const res = await agent.get('/api/v1/auth/');
+    const res = await agent.get('/api/v1/auth');
     expect(res.status).toEqual(403);
   });
 
@@ -80,8 +76,6 @@ describe('user routes', () => {
     await agent.post('/api/v1/auth/signup').send({
       email: 'admin',
       password: '1234',
-      firstName: 'admin',
-      lastName: 'admin',
     });
     // sign in the user
     await agent
@@ -89,13 +83,13 @@ describe('user routes', () => {
       .send({ email: 'admin', password: '1234' });
 
     // const [agent] = await registerAndLogin({ email: 'admin' });
-    const res = await agent.get('/api/v1/auth/');
+    const res = await agent.get('/api/v1/auth');
     expect(res.status).toEqual(200);
   });
 
   it('/auth should return a 200 if user is admin', async () => {
     const [agent] = await registerAndLogin({ email: 'admin' });
-    const res = await agent.get('/api/v1/auth/');
+    const res = await agent.get('/api/v1/auth');
     expect(res.status).toEqual(200);
   });
 
