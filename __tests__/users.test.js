@@ -52,21 +52,15 @@ describe('user routes', () => {
     expect(res.status).toEqual(200);
   });
 
-  it('/protected should return a 401 if not authenticated', async () => {
-    const res = await request(app).get('/api/v1/auth/protected');
+  it('/verify should return a 401 if not authenticated', async () => {
+    const res = await request(app).get('/api/v1/auth/verify');
     expect(res.status).toEqual(401);
   });
 
-  it('/protected should return the current user if authenticated', async () => {
+  it('/verify should return the current user if authenticated', async () => {
     const [agent] = await registerAndLogin();
-    const res = await agent.get('/api/v1/auth/protected');
+    const res = await agent.get('/api/v1/auth/verify');
     expect(res.status).toEqual(200);
-  });
-
-  it('/auth should return 401 if user not admin', async () => {
-    const [agent] = await registerAndLogin();
-    const res = await agent.get('/api/v1/auth');
-    expect(res.status).toEqual(403);
   });
 
   it('DELETE /signout deletes the user session', async () => {
