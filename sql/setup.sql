@@ -17,6 +17,6 @@ CREATE TABLE full_stack_items (
   user_id BIGINT,
   bought BOOLEAN NOT NULL DEFAULT(FALSE),
   description VARCHAR,
-  quantity INT,
+  qty INT,
   FOREIGN KEY (user_id) REFERENCES full_stack_users(id)
 );

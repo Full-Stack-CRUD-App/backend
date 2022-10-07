@@ -35,12 +35,13 @@ describe('items', () => {
 
   it('#POST /api/v1/items creates a new item', async () => {
     const [agent, user] = await registerAndLogin();
-    const item = { description: 'pizza' };
+    const item = { description: 'pizza', qty: 3 };
     const res = await agent.post('/api/v1/items').send(item);
     expect(res.status).toBe(200);
     expect(res.body).toEqual({
       id: expect.any(String),
       description: item.description,
+      qty: item.qty,
       user_id: user.id,
       bought: false,
     });
@@ -48,7 +49,7 @@ describe('items', () => {
 
   it('#GET/api/v1/items lists all items for authenticated user', async () => {
     const [agent, user] = await registerAndLogin();
-    const item = { description: 'wine' };
+    const item = { description: 'wine', qty: 3 };
     const res = await agent.post('/api/v1/items').send(item);
     expect(res.status).toBe(200);
 
@@ -57,6 +58,7 @@ describe('items', () => {
     expect(resp.body[0]).toEqual({
       id: expect.any(String),
       description: 'wine',
+      qty: item.qty,
       user_id: user.id,
       bought: false,
     });
