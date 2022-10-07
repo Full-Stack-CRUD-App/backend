@@ -15,9 +15,8 @@ CREATE TABLE full_stack_users (
 CREATE TABLE full_stack_items (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   user_id BIGINT,
-  completed BOOLEAN NOT NULL DEFAULT(FALSE),
-  item VARCHAR,
+  bought BOOLEAN NOT NULL DEFAULT(FALSE),
+  description VARCHAR,
   quantity INT,
-  urgency VARCHAR,
   FOREIGN KEY (user_id) REFERENCES full_stack_users(id)
 );
