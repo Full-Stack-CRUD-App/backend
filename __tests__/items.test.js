@@ -80,4 +80,18 @@ describe('items', () => {
       bought: true,
     });
   });
+
+  it('#DELETE /api/v1/items/:id user can delete a item', async () => {
+    const [agent] = await registerAndLogin();
+    const item = { description: 'lettuce', qty: 1 };
+
+    const response = await agent.post('/api/v1/items').send(item);
+    expect(response.status).toBe(200);
+
+    const res = await agent.delete('/api/v1/items/1');
+    expect(res.status).toBe(200);
+
+    const resp = await agent.get('/api/v1/items/1');
+    expect(resp.status).toBe(404);
+  });
 });
