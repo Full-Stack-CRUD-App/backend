@@ -45,4 +45,20 @@ describe('items', () => {
       bought: false,
     });
   });
+
+  it('#GET/api/v1/items lists all items for authenticated user', async () => {
+    const [agent, user] = await registerAndLogin();
+    const item = { description: 'wine' };
+    const res = await agent.post('/api/v1/items').send(item);
+    expect(res.status).toBe(200);
+
+    const resp = await agent.get('/api/v1/items');
+    expect(resp.body.length).toBe(1);
+    expect(resp.body[0]).toEqual({
+      id: expect.any(String),
+      description: 'wine',
+      user_id: user.id,
+      bought: false,
+    });
+  });
 });
