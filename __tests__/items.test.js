@@ -63,4 +63,21 @@ describe('items', () => {
       bought: false,
     });
   });
+
+  it('#PUT /api/v1/items/:id allows an auth user to buy a item', async () => {
+    const [agent, user] = await registerAndLogin();
+    const item = { description: 'wine', qty: 7 };
+    const res = await agent.post('/api/v1/items').send(item);
+    expect(res.status).toBe(200);
+
+    const resp = await agent.put('/api/v1/items/1').send({ bought: true });
+    expect(resp.status).toBe(200);
+    expect(resp.body).toEqual({
+      id: expect.any(String),
+      description: 'wine',
+      qty: 7,
+      user_id: user.id,
+      bought: true,
+    });
+  });
 });
